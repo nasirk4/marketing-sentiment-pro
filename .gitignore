@@ -1,1 +1,72 @@
 .streamlit/secrets.toml
+
+# 🐍 Python artifacts
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# 📦 Virtual environments
+venv/
+env/
+.sentipro/
+sentipro/
+
+# 📊 Data files
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.sav
+*.dta
+*.db
+*.sqlite
+*.parquet
+*.feather
+*.jsonl
+
+# 📁 Logs and temp
+*.log
+*.tmp
+*.bak
+*.swp
+
+# 🔐 Secrets and config
+.env
+*.key
+*.pem
+
+# 🧪 Jupyter and notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# 🖼️ Streamlit cache
+.streamlit/
+.cache/
+
+# 🧰 IDE and OS clutter
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 📦 Package lock files
+Pipfile.lock
+poetry.lock
+
+# 🧪 Model weights and binaries
+*.pt
+*.pth
+*.h5
+*.onnx
+*.dll
+*.lib
+*.bin
+
+# 🧼 Git LFS tracked files (optional)
+*.lfs
