@@ -2,7 +2,7 @@
 import pandas as pd
 import streamlit as st
 from datetime import datetime
-from app.twitter import fetch_tweets, get_api_client
+from app.twitter import fetch_tweets_safe, get_api_client
 from app.utils import clean_text, get_subjectivity, get_polarity, get_sentiment_label
 from app.config import MAX_TWEETS_DEMO, CACHE_TTL
 
@@ -17,7 +17,7 @@ def analyze_query(mode, query, count, include_retweets):
     
     # Get both API clients
     api_v1, client_v2 = get_api_client()
-    raw_tweets = fetch_tweets(api_v1, client_v2, mode, query, count, include_retweets)
+    raw_tweets = fetch_tweets_safe(api_v1, client_v2, mode, query, count, include_retweets)
     
     if not raw_tweets:
         return pd.DataFrame()

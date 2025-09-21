@@ -5,6 +5,10 @@ from wordcloud import WordCloud
 from app.logic import analyze_query
 from app.config import MAX_TWEETS_DEMO
 import os
+
+# ADD THIS IMPORT - crucial for rate limiting
+from app.twitter import api_state
+
 def render_sidebar():
     """Renders the configuration sidebar."""
     with st.sidebar:
@@ -19,9 +23,16 @@ def render_sidebar():
         tweet_count = st.slider("Tweets to Analyze", 10, MAX_TWEETS_DEMO, 50, help=f"Demo limited to {MAX_TWEETS_DEMO} tweets.")
         include_retweets = st.checkbox("Include Retweets", value=False)
         
+        # ADD DEMO MODE TOGGLE - essential for rate limit control
+        demo_mode = st.checkbox("🎭 Use Demo Mode (Recommended)", value=True, 
+                               help="Use high-quality sample data to avoid API rate limits")
+        
         if st.button("Analyze Sentiment", type="primary", use_container_width=True):
+            # SET DEMO MODE STATE - critical for preventing rate limits
+            api_state.demo_mode = demo_mode
             st.session_state['analyze_triggered'] = True
             st.session_state['current_query'] = query
+            st.session_state['demo_mode'] = demo_mode
         else:
             if 'analyze_triggered' not in st.session_state:
                 st.session_state['analyze_triggered'] = False
@@ -52,6 +63,18 @@ def render_main_content(df, query, mode):
         st.warning("No data retrieved or all tweets were filtered out. Try a different query or including retweets.")
         return
         
+    # ADD API STATUS INDICATOR - important for user feedback
+    from app.twitter import get_api_status
+    api_status = get_api_status()
+    
+    if st.session_state.get('demo_mode', True):
+        st.info("🎭 **Demo Mode**: Showing high-quality sample data (no API calls)")
+    elif api_status['rate_limited']:
+        remaining = int(api_status['rate_limit_remaining'])
+        st.warning(f"⏳ **Rate Limited**: Using demo data for {remaining} seconds")
+    else:
+        st.success("✅ **Live API**: Using real Twitter data")
+    
     st.success(f"Analysis complete for **'{query}'**! Processed **{len(df)}** posts.")
     _render_kpi_metrics(df)
     _render_tabs(df)
