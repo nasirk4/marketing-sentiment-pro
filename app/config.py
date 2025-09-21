@@ -10,4 +10,4 @@ BEARER_TOKEN_SECRET_NAME = "TWITTER_BEARER_TOKEN"
 
 # App Behavior Settings
 MAX_TWEETS_DEMO = 200  # Safe limit for free API tier to avoid rate limits
-CACHE_TTL = 600  # Time in seconds to cache data (10 minutes)
+CACHE_TTL = 600  # Time in seconds to cache data (10 minutes)# Deployment timestamp: 2025-09-21 22:43:28
