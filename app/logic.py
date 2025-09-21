@@ -2,7 +2,7 @@
 import pandas as pd
 import streamlit as st
 from datetime import datetime
-from app.twitter import fetch_tweets_safe, get_api_client
+from app.twitter import fetch_tweets_safe  # Updated import - removed get_api_client and include_rt
 from app.utils import clean_text, get_subjectivity, get_polarity, get_sentiment_label
 from app.config import MAX_TWEETS_DEMO, CACHE_TTL
 
@@ -15,15 +15,17 @@ def analyze_query(mode, query, count, include_retweets):
     # Enforce demo limit
     count = min(count, MAX_TWEETS_DEMO)
     
-    # Get both API clients
-    api_v1, client_v2 = get_api_client()
-    raw_tweets = fetch_tweets_safe(api_v1, client_v2, mode, query, count, include_retweets)
+    # Use the new fetch_tweets_safe function (no need for API clients)
+    raw_tweets = fetch_tweets_safe(mode, query, count, include_retweets)  # Fixed parameter name
     
     if not raw_tweets:
         return pd.DataFrame()
     
-    # Create DataFrame and process data (rest of your function remains the same)
-    df = pd.DataFrame(raw_tweets, columns=['Raw_Tweet'])
+    # Extract tweet texts from the new format (list of dictionaries)
+    tweet_texts = [tweet['text'] for tweet in raw_tweets]
+    
+    # Create DataFrame and process data
+    df = pd.DataFrame(tweet_texts, columns=['Raw_Tweet'])
     df['Cleaned_Tweet'] = df['Raw_Tweet'].apply(clean_text)
     # Filter out empty tweets after cleaning
     df = df[df['Cleaned_Tweet'].str.strip().astype(bool)]
