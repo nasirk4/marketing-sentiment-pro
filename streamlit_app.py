@@ -16,14 +16,57 @@ if 'force_demo' not in st.session_state:
 
 def main():
     """Main function to run the Streamlit app."""
-    # Only show API status, render_ui() handles the main sidebar
+    # Show fixed top navigation links
+    show_top_navigation()
+    
+    # Show API status in sidebar
     show_api_status()
     
     # Render the main UI (includes the complete sidebar)
     render_ui()
+
+def show_top_navigation():
+    """Show fixed navigation links at the top right corner."""
+    st.markdown("""
+    <style>
+    .fixed-nav {
+        position: fixed;
+        top: 15px;
+        right: 20px;
+        z-index: 9999;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: 1px solid #e0e0e0;
+        backdrop-filter: blur(5px);
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+    .fixed-nav a {
+        margin: 0 10px;
+        text-decoration: none;
+        color: #1f77b4;
+        font-weight: 600;
+        font-size: 14px;
+        transition: color 0.2s ease;
+    }
+    .fixed-nav a:hover {
+        color: #ff4b4b;
+        text-decoration: none;
+    }
+    .nav-spacer {
+        height: 60px;
+    }
+    </style>
     
-    # Add documentation links to the main app area (footer)
-    show_documentation_links()
+    <div class="fixed-nav">
+        <a href="https://github.com/nasirk4/marketing-sentiment-pro" target="_blank" title="Documentation">📖 Docs</a>
+        <a href="https://github.com/nasirk4/marketing-sentiment-pro/issues" target="_blank" title="Report Issues">🐛 Issues</a>
+        <a href="https://github.com/nasirk4/marketing-sentiment-pro" target="_blank" title="Star on GitHub">⭐ Star</a>
+    </div>
+    
+    <div class="nav-spacer"></div>
+    """, unsafe_allow_html=True)
 
 def show_api_status():
     """Show API status information in sidebar below configuration panel."""
@@ -45,18 +88,6 @@ def show_api_status():
     else:
         st.sidebar.success("✅ Live API Active")
         st.sidebar.info(f"API Calls: {api_status['total_calls']}")
-
-def show_documentation_links():
-    """Show documentation links in the main app area (footer)."""
-    st.markdown("---")
-    st.markdown(
-        """
-        **Links:** 
-        [📖 Documentation](https://github.com/nasirk4/marketing-sentiment-pro) | 
-        [🐛 Report Issues](https://github.com/nasirk4/marketing-sentiment-pro/issues) |
-        [⭐ Star on GitHub](https://github.com/nasirk4/marketing-sentiment-pro)
-        """
-    )
 
 if __name__ == "__main__":
     main()
