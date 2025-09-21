@@ -33,7 +33,7 @@ def show_top_navigation():
     .fixed-nav {
         position: fixed;
         top: 15px;
-        left: 20px;
+        center: 20px;
         z-index: 999999; /* Extremely high z-index */
         background: rgba(255, 255, 255, 0.98);
         padding: 12px 18px;
