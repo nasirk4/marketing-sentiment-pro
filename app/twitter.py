@@ -7,11 +7,9 @@ def get_api_client():
     """Authenticates and returns Twitter API clients for both v1.1 and v2."""
     try:
         # API v1.1 client (for user_timeline if available)
-        auth_v1 = tweepy.OAuthHandler(
+        auth_v1 = tweepy.OAuth1UserHandler(
             st.secrets[CONSUMER_KEY_SECRET_NAME], 
-            st.secrets[CONSUMER_SECRET_SECRET_NAME]
-        )
-        auth_v1.set_access_token(
+            st.secrets[CONSUMER_SECRET_SECRET_NAME],
             st.secrets[ACCESS_TOKEN_SECRET_NAME], 
             st.secrets[ACCESS_TOKEN_SECRET_SECRET_NAME]
         )
@@ -30,12 +28,12 @@ def get_api_client():
         return api_v1, client_v2
         
     except KeyError as e:
-        raise Exception(f"Twitter API key not found in secrets: {e}. Please check your Streamlit secrets configuration.")
+        raise Exception(f"Twitter API key not found in secrets: {e}")
     except Exception as e:
         raise Exception(f"Failed to authenticate with Twitter API: {e}")
 
 def fetch_tweets(api_v1, client_v2, mode, query, count, include_retweets):
-    """Fetches tweets using API v2 first, falls back to v1.1, then to demo data."""
+    """Fetches tweets using the best available API method."""
     
     # Try Twitter API v2 first (most modern)
     try:
@@ -47,12 +45,11 @@ def fetch_tweets(api_v1, client_v2, mode, query, count, include_retweets):
             # Use v2 search endpoint
             response = client_v2.search_recent_tweets(
                 query=search_query,
-                max_results=min(count, 100),  # v2 max per request
-                tweet_fields=['author_id', 'created_at', 'text']
+                max_results=min(count, 100),
+                tweet_fields=['text']
             )
             
             if response and response.data:
-                st.success("✅ Using Twitter API v2 (search_recent_tweets)")
                 return [tweet.text for tweet in response.data]
                 
         else:  # User Timeline
@@ -66,14 +63,13 @@ def fetch_tweets(api_v1, client_v2, mode, query, count, include_retweets):
                     id=user_id,
                     max_results=min(count, 100),
                     exclude=['retweets'] if not include_retweets else None,
-                    tweet_fields=['created_at', 'text']
+                    tweet_fields=['text']
                 )
                 
                 if response and response.data:
-                    st.success("✅ Using Twitter API v2 (get_users_tweets)")
                     return [tweet.text for tweet in response.data]
                     
-    except tweepy.TweepyException as e:
+    except Exception as e:
         print(f"Twitter API v2 failed: {e}")
         # Continue to try v1.1
     
@@ -81,26 +77,24 @@ def fetch_tweets(api_v1, client_v2, mode, query, count, include_retweets):
     try:
         if mode == "Keyword/Hashtag":
             search_query = f"{query} -filter:retweets" if not include_retweets else query
-            tweets = tweepy.Cursor(api_v1.search_tweets, q=search_query, lang="en", tweet_mode='extended').items(count)
+            tweets = tweepy.Cursor(api_v1.search_tweets, q=search_query, lang="en", tweet_mode='extended').items(min(count, 100))
             tweet_list = [tweet.full_text for tweet in tweets]
             if tweet_list:
-                st.info("ℹ️ Using Twitter API v1.1 (search_tweets)")
                 return tweet_list
         else:  # User Timeline
-            tweets = tweepy.Cursor(api_v1.user_timeline, screen_name=query, count=count, tweet_mode='extended', include_rts=include_retweets).items(count)
+            tweets = tweepy.Cursor(api_v1.user_timeline, screen_name=query, count=min(count, 100), tweet_mode='extended', include_rts=include_retweets).items()
             tweet_list = [tweet.full_text for tweet in tweets]
             if tweet_list:
-                st.info("ℹ️ Using Twitter API v1.1 (user_timeline)")
                 return tweet_list
                 
-    except tweepy.TweepyException as e:
+    except Exception as e:
         print(f"Twitter API v1.1 also failed: {e}")
         # Continue to demo mode
     
     # Final fallback: Demo mode with sample data
     st.warning("⚠️ Using sample data for demonstration. Twitter API access may be limited.")
     
-    # Generate realistic sample tweets based on the query
+    # Generate realistic sample tweets
     sample_tweets = [
         f"Really loving the new features of {query}! This is amazing. 😊",
         f"{query} has been quite reliable for my needs. Solid performance.",
