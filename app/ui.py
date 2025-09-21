@@ -96,6 +96,44 @@ def _render_kpi_metrics(df):
     m3.metric("Neutral", f"{round(100 - pos_perc - neg_perc, 1)}%")
     m4.metric("Negative", f"{neg_perc}%", delta_color="inverse")
 
+def _render_tabs(df):
+    """Renders the analysis results in separate tabs."""
+    tab1, tab2, tab3 = st.tabs(["📊 Sentiment", "☁️ Word Cloud", "📋 Sample Data"])
+    
+    with tab1:
+        fig, ax = plt.subplots()
+        df['Sentiment'].value_counts().plot(kind='pie', autopct='%1.1f%%', ax=ax, colors=['#4CAF50','#FFC107','#F44336'])
+        ax.set_ylabel('')
+        st.pyplot(fig)
+    
+    with tab2:
+        all_words = ' '.join(df['Cleaned_Tweet'])
+        if all_words.strip():
+            wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_words)
+            fig, ax = plt.subplots()
+            ax.imshow(wordcloud, interpolation="bilinear")
+            ax.axis('off')
+            st.pyplot(fig)
+        else:
+            st.info("Not enough text to generate a word cloud.")
+    
+    with tab3:
+        # Add color legend above the table
+        _render_color_legend()
+        
+        # Display the dataframe with color gradient
+        st.dataframe(
+            df[['Analysis_Time', 'Sentiment', 'Polarity', 'Raw_Tweet']].style.background_gradient(
+                subset=['Polarity'], 
+                cmap='RdYlGn',
+                vmin=-1,
+                vmax=1
+            ), 
+            width='stretch',
+            use_container_width=True
+        )
+
+
 def _render_color_legend():
     """Interactive color legend with expandable details."""
     with st.expander("🎨 Color Legend Guide", expanded=True):
