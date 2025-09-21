@@ -40,7 +40,7 @@ def show_api_status():
     """Show API status information in sidebar."""
     st.sidebar.subheader("API Status")
     
-    # Import here to avoid circular imports
+    # Import here to avoid circular imports - FIXED FUNCTION NAME
     from app.twitter import has_valid_api_credentials, get_api_status
     from app.twitter import api_state
     
