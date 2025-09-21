@@ -1,6 +1,5 @@
 # 🚀 Main entry point for Streamlit - Safe Demo Version
 import streamlit as st
-import time
 from app.ui import render_ui
 
 # Page configuration
@@ -17,30 +16,17 @@ if 'force_demo' not in st.session_state:
 
 def main():
     """Main function to run the Streamlit app."""
-    st.sidebar.title("🔧 Configuration Panel")
-    
-    # Force demo mode checkbox
-    st.session_state.force_demo = st.sidebar.checkbox(
-        "🎭 Use Demo Mode (Recommended)", 
-        value=True,
-        help="Use realistic sample data instead of Twitter API to avoid rate limits"
-    )
-    
-    # Add manual refresh button
-    if st.sidebar.button("🔄 Refresh Analysis", help="Generate new analysis with fresh data"):
-        st.rerun()
-    
-    # Show API status information
+    # Only show API status, render_ui() handles the main sidebar
     show_api_status()
     
-    # Render the main UI
+    # Render the main UI (includes the complete sidebar)
     render_ui()
 
 def show_api_status():
     """Show API status information in sidebar."""
     st.sidebar.subheader("API Status")
     
-    # Import here to avoid circular imports - FIXED FUNCTION NAME
+    # Import here to avoid circular imports
     from app.twitter import has_valid_api_credentials, get_api_status
     from app.twitter import api_state
     

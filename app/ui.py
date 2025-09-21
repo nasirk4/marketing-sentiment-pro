@@ -30,6 +30,7 @@ def render_sidebar():
         if st.button("Analyze Sentiment", type="primary", use_container_width=True):
             # SET DEMO MODE STATE - critical for preventing rate limits
             api_state.demo_mode = demo_mode
+            st.session_state.force_demo = demo_mode  # Sync with main app state
             st.session_state['analyze_triggered'] = True
             st.session_state['current_query'] = query
             st.session_state['demo_mode'] = demo_mode
@@ -114,11 +115,10 @@ def _render_tabs(df):
             st.info("Not enough text to generate a word cloud.")
     
     with tab3:
-        st.dataframe(df[['Analysis_Time', 'Sentiment', 'Polarity', 'Raw_Tweet']].style.background_gradient(subset=['Polarity'], cmap='RdYlGn'), use_container_width=True)
+        st.dataframe(df[['Analysis_Time', 'Sentiment', 'Polarity', 'Raw_Tweet']].style.background_gradient(subset=['Polarity'], cmap='RdYlGn'), width='stretch')
 
 def render_ui():
     """Main function to render the entire UI."""
-    st.set_page_config(page_title="Marketing Sentiment Pro", page_icon="📈", layout="wide")
     st.title("📈 Marketing Sentiment Pro")
     st.markdown("A **DevOps-powered** marketing intelligence tool for real-time social sentiment analysis.")
     
