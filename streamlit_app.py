@@ -21,11 +21,12 @@ def main():
     
     # Render the main UI (includes the complete sidebar)
     render_ui()
+    
+    # Add documentation links to the main app area (footer)
+    show_documentation_links()
 
 def show_api_status():
-    """Show API status information in sidebar."""
-    st.sidebar.subheader("API Status")
-    
+    """Show API status information in sidebar below configuration panel."""
     # Import here to avoid circular imports
     from app.twitter import has_valid_api_credentials, get_api_status
     from app.twitter import api_state
@@ -44,12 +45,17 @@ def show_api_status():
     else:
         st.sidebar.success("✅ Live API Active")
         st.sidebar.info(f"API Calls: {api_status['total_calls']}")
-    
-    # Add documentation link
-    st.sidebar.markdown("---")
-    st.sidebar.markdown(
-        "[📖 Documentation](https://github.com/nasirk4/marketing-sentiment-pro) | "
-        "[🐛 Report Issues](https://github.com/nasirk4/marketing-sentiment-pro/issues)"
+
+def show_documentation_links():
+    """Show documentation links in the main app area (footer)."""
+    st.markdown("---")
+    st.markdown(
+        """
+        **Links:** 
+        [📖 Documentation](https://github.com/nasirk4/marketing-sentiment-pro) | 
+        [🐛 Report Issues](https://github.com/nasirk4/marketing-sentiment-pro/issues) |
+        [⭐ Star on GitHub](https://github.com/nasirk4/marketing-sentiment-pro)
+        """
     )
 
 if __name__ == "__main__":

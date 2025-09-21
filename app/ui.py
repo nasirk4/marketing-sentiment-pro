@@ -40,11 +40,14 @@ def render_sidebar():
                 
         _render_production_teaser()
         
+        # API Status will be displayed below this by streamlit_app.py
+        st.sidebar.markdown("---")
+        st.sidebar.subheader("API Status")
+        
         return query, analysis_mode, tweet_count, include_retweets
 
 def _render_production_teaser():
     """Renders the expandable section for production features."""
-    st.sidebar.markdown("---")
     with st.sidebar.expander("🚀 **Production Ready Features**"):
         st.markdown("""
         **This demo shows core functionality. A production plan unlocks:**
