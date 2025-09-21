@@ -96,29 +96,37 @@ def _render_kpi_metrics(df):
     m3.metric("Neutral", f"{round(100 - pos_perc - neg_perc, 1)}%")
     m4.metric("Negative", f"{neg_perc}%", delta_color="inverse")
 
-def _render_tabs(df):
-    """Renders the analysis results in separate tabs."""
-    tab1, tab2, tab3 = st.tabs(["📊 Sentiment", "☁️ Word Cloud", "📋 Sample Data"])
-    
-    with tab1:
-        fig, ax = plt.subplots()
-        df['Sentiment'].value_counts().plot(kind='pie', autopct='%1.1f%%', ax=ax, colors=['#4CAF50','#FFC107','#F44336'])
-        ax.set_ylabel('')
-        st.pyplot(fig)
-    
-    with tab2:
-        all_words = ' '.join(df['Cleaned_Tweet'])
-        if all_words.strip():
-            wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_words)
-            fig, ax = plt.subplots()
-            ax.imshow(wordcloud, interpolation="bilinear")
-            ax.axis('off')
-            st.pyplot(fig)
-        else:
-            st.info("Not enough text to generate a word cloud.")
-    
-    with tab3:
-        st.dataframe(df[['Analysis_Time', 'Sentiment', 'Polarity', 'Raw_Tweet']].style.background_gradient(subset=['Polarity'], cmap='RdYlGn'), width='stretch')
+def _render_color_legend():
+    """Interactive color legend with expandable details."""
+    with st.expander("🎨 Color Legend Guide", expanded=True):
+        st.markdown("""
+        **Sentiment Polarity Color Scale:**
+        
+        - 🔴 **Negative** (-1.0 to -0.1): Strongly negative sentiment
+        - 🟡 **Neutral** (-0.1 to +0.1): Mixed or neutral sentiment  
+        - 🟢 **Positive** (+0.1 to +1.0): Strongly positive sentiment
+        
+        *The color intensity indicates sentiment strength.*
+        """)
+        
+        # Visual color bar
+        st.markdown("""
+        <div style='
+            background: linear-gradient(90deg, #ff4b4b 0%, #ffeb3b 50%, #4caf50 100%);
+            height: 20px;
+            border-radius: 5px;
+            margin: 10px 0;
+        '></div>
+        """, unsafe_allow_html=True)
+        
+        # Scale markers
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.markdown("**-1.0**")
+        with col3:
+            st.markdown("**0.0**")
+        with col5:
+            st.markdown("**+1.0**")
 
 def render_ui():
     """Main function to render the entire UI."""
