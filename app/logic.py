@@ -15,13 +15,14 @@ def analyze_query(mode, query, count, include_retweets):
     # Enforce demo limit
     count = min(count, MAX_TWEETS_DEMO)
     
-    api = get_api_client()
-    raw_tweets = fetch_tweets(api, mode, query, count, include_retweets)
+    # Get both API clients
+    api_v1, client_v2 = get_api_client()
+    raw_tweets = fetch_tweets(api_v1, client_v2, mode, query, count, include_retweets)
     
     if not raw_tweets:
         return pd.DataFrame()
     
-    # Create DataFrame and process data
+    # Create DataFrame and process data (rest of your function remains the same)
     df = pd.DataFrame(raw_tweets, columns=['Raw_Tweet'])
     df['Cleaned_Tweet'] = df['Raw_Tweet'].apply(clean_text)
     # Filter out empty tweets after cleaning
